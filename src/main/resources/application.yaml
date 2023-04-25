@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: msvc-users
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1522/xe
+    username: BO_USERS
+    password: Sencilla2023
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.Oracle10gDialect
+        format_sql: false
+    show-sql: false
+
+server:
+  port: 8003
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
