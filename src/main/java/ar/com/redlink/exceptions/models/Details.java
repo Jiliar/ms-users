@@ -1,4 +1,4 @@
-package ar.com.redlink.controllers.responses.error;
+package ar.com.redlink.exceptions.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorDetails {
+public class Details {
     private String error_code;
     private String error_message;
     private String error_detail;
-    private ErrorMetaData meta_data;
+    private MetaData meta_data;
 }

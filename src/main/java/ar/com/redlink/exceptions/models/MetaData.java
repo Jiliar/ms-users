@@ -1,4 +1,4 @@
-package ar.com.redlink.controllers.responses.error;
+package ar.com.redlink.exceptions.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorMetaData {
+public class MetaData {
     private String reason;
     private String field;
     private String rejectedValue;

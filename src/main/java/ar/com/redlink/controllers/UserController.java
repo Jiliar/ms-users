@@ -1,12 +1,13 @@
 package ar.com.redlink.controllers;
 
-import ar.com.redlink.controllers.requests.UserRequest;
-import ar.com.redlink.controllers.responses.Response;
+import ar.com.redlink.controllers.requests.UserDTO;
+import ar.com.redlink.controllers.interfaces.IUserController;
+import ar.com.redlink.converters.users.UserDTOToUserEntity;
+import ar.com.redlink.exceptions.models.ApiException;
 import ar.com.redlink.converters.genders.GenderEntityToGender;
 import ar.com.redlink.converters.user_types_ids.UserTypeIdEntityToUserTypeId;
 import ar.com.redlink.converters.users.UserEntityToUser;
-import ar.com.redlink.converters.users.UserRequestToUserEntity;
-import ar.com.redlink.exceptions.MessageException;
+import ar.com.redlink.exceptions.NotFoundException;
 import ar.com.redlink.models.Gender;
 import ar.com.redlink.models.User;
 import ar.com.redlink.models.UserTypeId;
@@ -16,8 +17,8 @@ import ar.com.redlink.services.IUserTypeIdService;
 import ar.com.redlink.services.impl.entities.GenderEntity;
 import ar.com.redlink.services.impl.entities.UserEntity;
 import ar.com.redlink.services.impl.entities.UserTypeIdEntity;
-import ar.com.redlink.utils.ErrorHandler;
-import ar.com.redlink.utils.TimeUtils;
+import ar.com.redlink.exceptions.ErrorValidationHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+@Slf4j
+public class UserController implements IUserController {
 
     private String path = "/users";
     @Autowired
@@ -49,6 +51,7 @@ public class UserController {
         List<User> details = service.listAll()
             .stream()
             .map(userEntityResult -> {
+
                 User userResult = UserEntityToUser.INSTANCE.userEntityToUser(userEntityResult);
 
                 GenderEntity genderEntity = genderService.findById(userEntityResult.getGender_id()).get();
@@ -67,60 +70,49 @@ public class UserController {
             })
             .collect(Collectors.toList());
 
-            Response response = new Response(details, path, TimeUtils.currentTimestamp());
-
         return ResponseEntity.ok()
-                .body(response);
+                .body(details);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Integer id){
-
+    public ResponseEntity<?> getById(@PathVariable Integer id) throws NotFoundException {
         Optional<UserEntity> optionalUser =  service.findById(id);
         return optionalUser.map(userEntityResult -> {
-            Response response = UserDetails(userEntityResult, path);
             return ResponseEntity.ok()
-                                 .body(response);
-        }).orElseGet(() -> ResponseEntity.notFound()
-                .build());
+                                 .body(userEntityResult);
+        }).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UserRequest user, BindingResult result){
-        Response response = null;
-        try {
-            if (result.hasErrors()) {
-                return ErrorHandler.validate(result, path);
+    public ResponseEntity<?> create(@Valid @RequestBody UserDTO user, BindingResult result) {
+
+        ApiException apiException = null;
+
+            if(result.hasErrors()){
+                return ErrorValidationHandler.validate(result);
             }
+
             if (service.findByIdentification(user.getIdentification()).isPresent()) {
                 List<String> details = new ArrayList();
                 details.add("There is already a user with that ID");
-                response = new Response(details, path, TimeUtils.currentTimestamp());
+                apiException = new ApiException(details, path);
                 return ResponseEntity
                         .badRequest()
-                        .body(response);
+                        .body(apiException);
             }
-            UserEntity userEntity = UserRequestToUserEntity.INSTANCE.userRequestToUserEntity(user);
+            UserEntity userEntity = UserDTOToUserEntity.INSTANCE.userDTOToUserEntity(user);
             userEntity.setStatus(1);
             userEntity.setRegistration_user(1);
             userEntity.setRegistration_date(LocalDateTime.now());
             UserEntity userEntityResult = service.save(userEntity);
-            response = UserDetails(userEntityResult, path);
-            return ResponseEntity.ok()
-                    .body(response);
-        }catch (MessageException e){
-            List<MessageException> details = new ArrayList();
-            details.add(e);
-            response = new Response(details, path, TimeUtils.currentTimestamp());
-        }
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+            return ResponseEntity
+                    .ok()
+                    .body(userEntityResult);
     }
 
     @DeleteMapping("/id/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable Integer id){
+    public ResponseEntity<?> delete(@PathVariable Integer id){
         Optional<UserEntity> optionalUser =  service.findById(id);
         if(optionalUser.isPresent()){
             service.delete(id);
@@ -132,10 +124,10 @@ public class UserController {
     }
 
    @PutMapping("/id/{id}")
-   public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserRequest user, BindingResult result){
-       Response response = null;
+   public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserDTO user, BindingResult result){
+       ApiException apiException = null;
         if(result.hasErrors()){
-            return ErrorHandler.validate(result, path);
+            return ErrorValidationHandler.validate(result);
         }
 
         Optional<UserEntity> optionalUser =  service.findById(id);
@@ -146,10 +138,10 @@ public class UserController {
 
                 List<String> details = new ArrayList();
                 details.add("There is already a user with that Email");
-                response = new Response(details, path, TimeUtils.currentTimestamp());
+                apiException = new ApiException(details, path);
                 return ResponseEntity
                         .badRequest()
-                        .body(response);
+                        .body(apiException);
 
             }
 
@@ -172,18 +164,18 @@ public class UserController {
             userEntity.setUpdate_date(LocalDateTime.now());
 
             UserEntity userEntityResult = service.save(userEntity);
-            response = UserDetails(userEntityResult, path);
+            User userResult = UserDetails(userEntityResult, path);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(response);
+                    .body(userResult);
         }else{
             return ResponseEntity.notFound()
                     .build();
         }
     }
 
-    public Response UserDetails(UserEntity userEntityResult, String path){
+    public User UserDetails(UserEntity userEntityResult, String path){
 
         User userResult = UserEntityToUser.INSTANCE.userEntityToUser(userEntityResult);
 
@@ -199,10 +191,7 @@ public class UserController {
         String formatedDate = newFormat.format(userEntityResult.getBirthday_date());
         userResult.setBirthday_date(formatedDate);
 
-        List<User> details = new ArrayList();
-        details.add(userResult);
-
-        return new Response(details, path, TimeUtils.currentTimestamp());
+        return userResult;
     }
 
 }

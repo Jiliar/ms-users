@@ -2,7 +2,11 @@ package ar.com.redlink.services.impl;
 
 import ar.com.redlink.repository.IGenericRepository;
 import ar.com.redlink.services.ICRUD;
+import com.github.damianwajser.exceptions.RestException;
+import com.github.damianwajser.exceptions.impl.servererror.InternalServerErrorException;
+import com.github.damianwajser.exceptions.model.ExceptionDetail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +18,7 @@ public abstract class CRUDImpl<T, ID> implements ICRUD<T, ID> {
     public Optional<T> findById(ID id){
         return getRepository().findById(id);
     }
-    public T save(T t){
+    public T save(T t) {
         return getRepository().save(t);
     }
     public void delete(ID id){

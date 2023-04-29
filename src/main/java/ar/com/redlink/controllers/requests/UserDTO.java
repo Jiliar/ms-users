@@ -1,24 +1,22 @@
 package ar.com.redlink.controllers.requests;
 
-import javax.validation.constraints.Null;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.Date;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
-public class UserRequest {
+import com.github.damianwajser.validator.annotation.global.Email;
+import com.github.damianwajser.validator.annotation.strings.UUID;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@Data
+@Schema(name="Version 1 User", description="DTO for User management")
+public class UserDTO {
+
+    @UUID(message = "Bad Format", businessCode = "ERROR_12")
     private Integer id;
 
     @NotNull
@@ -42,7 +40,7 @@ public class UserRequest {
     @Size(max = 100)
     private String lastname2;
 
-    @Email
+    @Email(businessCode = "01.02.28", message = "The email does not have a valid format")
     @NotNull
     @Size(max = 150)
     private String email;

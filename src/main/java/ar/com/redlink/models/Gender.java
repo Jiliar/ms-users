@@ -13,7 +13,6 @@ import lombok.ToString;
 @ToString
 public class Gender{
 
-    private Integer id;
     private String name;
     private String description;
 

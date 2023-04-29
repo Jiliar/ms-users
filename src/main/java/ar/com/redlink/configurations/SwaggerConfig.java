@@ -1,5 +1,7 @@
 package ar.com.redlink.configurations;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -19,6 +21,10 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    @Autowired
+    private BuildProperties buildProperties;
+
+
     @Bean
     public Docket apiDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -34,7 +40,7 @@ public class SwaggerConfig {
         return new ApiInfo(
                 "Entities Service API",
                 "Entities Service API Description",
-                "1.0",
+                 buildProperties.getVersion().toString(),
                 "https://www.redlink.com.ar/",
                 new Contact("Codmind", "https://www.redlink.com.ar/", "apis@codmind.com"),
                 "LICENSE",

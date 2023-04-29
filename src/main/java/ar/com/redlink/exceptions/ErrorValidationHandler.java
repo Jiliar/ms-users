@@ -1,23 +1,24 @@
-package ar.com.redlink.utils;
+package ar.com.redlink.exceptions;
 
-import ar.com.redlink.controllers.responses.Response;
-import ar.com.redlink.controllers.responses.error.ErrorDetails;
-import ar.com.redlink.controllers.responses.error.ErrorMetaData;
+import ar.com.redlink.exceptions.models.Details;
+import ar.com.redlink.exceptions.models.MetaData;
+import ar.com.redlink.exceptions.models.ApiException;
+import ar.com.redlink.utils.TimeUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
 import java.util.*;
 
-public class ErrorHandler {
+public class ErrorValidationHandler {
 
-    public static ResponseEntity<?> validate(BindingResult result, String path) {
+    public static ResponseEntity<?> validate(BindingResult result) {
 
-        List<ErrorDetails> details = new ArrayList<>();
+        List<Details> details = new ArrayList<>();
 
         result.getFieldErrors().forEach(err->{
 
-            ErrorDetails detail = new ErrorDetails();
-            ErrorMetaData metaData = new ErrorMetaData();
+            Details detail = new Details();
+            MetaData metaData = new MetaData();
 
             detail.setError_code("XXX");
             detail.setError_message("An error has occurred in the field "+err.getField());
@@ -30,7 +31,8 @@ public class ErrorHandler {
             details.add(detail);
 
         });
-        Response response = new Response(details, path, TimeUtils.currentTimestamp());
+
+        ApiException response = new ApiException(details, null, TimeUtils.currentTimestamp());
         return ResponseEntity.badRequest().body(response);
     }
 

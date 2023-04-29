@@ -13,6 +13,18 @@ spring:
         dialect: org.hibernate.dialect.Oracle10gDialect
         format_sql: false
     show-sql: false
+  jackson:
+    property-naming-strategy: com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy
+  commons:
+    logger:
+      trace:
+        id:X-id
+      app:
+        name: ms-users
+      duration:
+        request:
+          enable: true
+
 
 server:
   port: 8003
@@ -22,3 +34,5 @@ logging:
     org:
       hibernate:
         SQL: debug
+  pattern:
+    level: "[%-5level] AppName: %X{appName} Request ID: %X{requestId} Client IP: %x{clientIp}"
