@@ -1,4 +1,4 @@
-package ar.com.redlink.models;
+package ar.com.redlink.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

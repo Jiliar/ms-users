@@ -1,6 +1,6 @@
 package ar.com.redlink.converters.user_types_ids;
 
-import ar.com.redlink.models.UserTypeId;
+import ar.com.redlink.domain.UserTypeId;
 import ar.com.redlink.services.impl.entities.UserTypeIdEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

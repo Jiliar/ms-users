@@ -2,7 +2,7 @@ package ar.com.redlink.controllers;
 
 import ar.com.redlink.controllers.interfaces.IUsertTypeIdController;
 import ar.com.redlink.converters.user_types_ids.UserTypeIdEntityToUserTypeId;
-import ar.com.redlink.models.UserTypeId;
+import ar.com.redlink.domain.UserTypeId;
 import ar.com.redlink.services.IUserTypeIdService;
 import ar.com.redlink.services.impl.entities.UserTypeIdEntity;
 import lombok.extern.slf4j.Slf4j;

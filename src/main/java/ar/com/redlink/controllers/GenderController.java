@@ -1,9 +1,8 @@
 package ar.com.redlink.controllers;
 
 import ar.com.redlink.controllers.interfaces.IGenderController;
-import ar.com.redlink.controllers.interfaces.IUserController;
 import ar.com.redlink.converters.genders.GenderEntityToGender;
-import ar.com.redlink.models.Gender;
+import ar.com.redlink.domain.Gender;
 import ar.com.redlink.services.IGenderService;
 import ar.com.redlink.services.impl.entities.GenderEntity;
 import lombok.extern.slf4j.Slf4j;
