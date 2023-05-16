@@ -1,1 +1,17 @@
+pluginManagement {
+    repositories {
+        maven {
+            url = uri("https://nexus.redlink.com.ar/repository/maven-public/")
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            url = uri("https://nexus.redlink.com.ar/repository/maven-public/")
+        }
+    }
+}
+
 rootProject.name = 'ms-users'

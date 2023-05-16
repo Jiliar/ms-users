@@ -16,14 +16,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
 
-@EnableWebMvc
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
     @Autowired
     private BuildProperties buildProperties;
-
 
     @Bean
     public Docket apiDocket() {
@@ -32,17 +30,16 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("ar.com.redlink.controllers"))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(getApiInfo())
-                ;
+                .apiInfo(getApiInfo());
     }
 
     private ApiInfo getApiInfo() {
         return new ApiInfo(
                 "Entities Service API",
                 "Entities Service API Description",
-                 buildProperties.getVersion().toString(),
+                buildProperties.getVersion().toString(),
                 "https://www.redlink.com.ar/",
-                new Contact("Codmind", "https://www.redlink.com.ar/", "apis@codmind.com"),
+                new Contact("RedLink", "https://www.redlink.com.ar/", "apis@redlink.com.ar"),
                 "LICENSE",
                 "LICENSE URL",
                 Collections.emptyList()

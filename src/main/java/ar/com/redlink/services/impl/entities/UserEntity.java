@@ -36,11 +36,11 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_SEQUENCE")
     @SequenceGenerator(name="USERS_SEQUENCE", sequenceName ="USERS_SEQ",  allocationSize = 1, schema="BO_USERS")
     @Column(name = "ID")
-    private Integer id;
+    private Long id;
 
     @NotNull(message = "The field type_id cannot be null")
     @Column(name = "TYPE_ID")
-    private Integer typeId;
+    private Long typeId;
 
     @NotBlank(message = "The field identification cannot be empty")
     @NotNull(message = "The field identification cannot be null")
@@ -76,14 +76,14 @@ public class UserEntity {
 
     @NotNull(message = "The field city_id cannot be null")
     @Column(name="CITY_ID")
-    private Integer city_id;
+    private Long city_id;
 
     @Column(name="POSTAL_CODE")
     private String postalCode;
 
     @NotNull(message = "The field gender cannot be null")
     @Column(name="GENDER_ID")
-    private Integer gender_id;
+    private Long gender_id;
 
     @Column(name="BIRTHDAY_DATE")
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,11 +1,6 @@
 package ar.com.redlink.services.impl.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -25,9 +20,10 @@ import java.time.LocalDateTime;
 public class UserTypeIdEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_TYPES_ID_SEQUENCE")
+    @SequenceGenerator(name="USERS_TYPES_ID_SEQUENCE", sequenceName ="USERS_TYPES_ID_SEQ",  allocationSize = 1, schema="BO_USERS")
     @Column(name = "ID")
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "The name of the identification type for user cannot be empty")
     @Column(name = "NAME", unique = true)

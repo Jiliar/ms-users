@@ -1,12 +1,8 @@
 package ar.com.redlink.services.impl;
 
-import ar.com.redlink.repository.IGenericRepository;
+import ar.com.redlink.repositories.IGenericRepository;
 import ar.com.redlink.services.ICRUD;
-import com.github.damianwajser.exceptions.RestException;
-import com.github.damianwajser.exceptions.impl.servererror.InternalServerErrorException;
-import com.github.damianwajser.exceptions.model.ExceptionDetail;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,0 +1,47 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    property-naming-strategy: com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy
+  application:
+    name: ms-users
+  datasource:
+    url: jdbc:oracle:thin:@//localhost:1522/xe
+    username: BO_USERS
+    password: Sencilla2023
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.Oracle10gDialect
+        format_sql: false
+    show-sql: false
+  commons:
+    logger:
+      trace:
+        id:X-id
+      app:
+        name: ms-users
+      duration:
+        request:
+          enable: true
+
+
+server:
+  port: 8003
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+ # pattern:
+ #   level: "[%-5level] AppName: %X{appName} Request ID: %X{requestId} Client IP: %x{clientIp}"
+
+app:
+  baseName: messages
+  defaultLocale: en

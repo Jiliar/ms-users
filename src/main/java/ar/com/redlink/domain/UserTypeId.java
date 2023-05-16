@@ -12,9 +12,8 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class UserTypeId {
+public class UserTypeId extends BasicModel{
 
-    private Integer id;
     private String name;
     private String description;
 

@@ -11,7 +11,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class Gender{
+public class Gender extends BasicModel{
 
     private String name;
     private String description;

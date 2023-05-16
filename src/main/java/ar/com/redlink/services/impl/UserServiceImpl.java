@@ -1,7 +1,7 @@
 package ar.com.redlink.services.impl;
 
-import ar.com.redlink.repository.IUserRepository;
-import ar.com.redlink.repository.IGenericRepository;
+import ar.com.redlink.repositories.IUserRepository;
+import ar.com.redlink.repositories.IGenericRepository;
 import ar.com.redlink.services.IUserService;
 import ar.com.redlink.services.impl.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl extends CRUDImpl<UserEntity, Integer> implements IUserService {
+public class UserServiceImpl extends CRUDImpl<UserEntity, Long> implements IUserService {
 
     @Autowired
     private IUserRepository repository;

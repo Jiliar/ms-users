@@ -1,43 +1,46 @@
 package ar.com.redlink.controllers;
 
-import ar.com.redlink.controllers.requests.UserDTO;
+import ar.com.redlink.controllers.requests.UserRequest;
 import ar.com.redlink.controllers.interfaces.IUserController;
-import ar.com.redlink.converters.users.UserDTOToUserEntity;
-import ar.com.redlink.exceptions.models.ApiException;
+import ar.com.redlink.converters.users.UserRequestToUserEntity;
 import ar.com.redlink.converters.genders.GenderEntityToGender;
 import ar.com.redlink.converters.user_types_ids.UserTypeIdEntityToUserTypeId;
 import ar.com.redlink.converters.users.UserEntityToUser;
-import ar.com.redlink.exceptions.NotFoundException;
 import ar.com.redlink.domain.Gender;
 import ar.com.redlink.domain.User;
 import ar.com.redlink.domain.UserTypeId;
 import ar.com.redlink.services.IGenderService;
 import ar.com.redlink.services.IUserService;
 import ar.com.redlink.services.IUserTypeIdService;
-import ar.com.redlink.services.impl.UserServiceImpl;
 import ar.com.redlink.services.impl.entities.GenderEntity;
 import ar.com.redlink.services.impl.entities.UserEntity;
 import ar.com.redlink.services.impl.entities.UserTypeIdEntity;
-import ar.com.redlink.exceptions.ErrorValidationHandler;
+import ar.com.redlink.utils.ErrorCodes;
+import com.github.damianwajser.exceptions.RestException;
+import com.github.damianwajser.exceptions.impl.badrequest.BadRequestException;
+import com.github.damianwajser.exceptions.impl.badrequest.NotFoundException;
+import com.github.damianwajser.exceptions.model.ExceptionDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+
+import static ar.com.redlink.utils.ErrorCodes.USER_EXISTS;
+import static ar.com.redlink.utils.ErrorCodes.USER_NOT_FOUND;
 
 @RestController
-@RequestMapping("/users")
 @Slf4j
 public class UserController implements IUserController {
 
-    private String path = "/users";
     @Autowired
     private IUserService service;
 
@@ -75,33 +78,22 @@ public class UserController implements IUserController {
                 .body(details);
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) throws NotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable @Valid Long id) throws RestException {
         Optional<UserEntity> optionalUser =  service.findById(id);
         return optionalUser.map(userEntityResult -> {
             return ResponseEntity.ok()
                                  .body(userEntityResult);
-        }).orElseThrow(() -> new NotFoundException("User not found"));
+        }).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UserDTO user, BindingResult result) {
-
-        ApiException apiException = null;
-
-            if(result.hasErrors()){
-                return ErrorValidationHandler.validate(result);
-            }
+    public ResponseEntity<?> create(@RequestBody @Validated UserRequest user) throws BadRequestException{
 
             if (service.findByIdentification(user.getIdentification()).isPresent()) {
-                List<String> details = new ArrayList();
-                details.add("There is already a user with that ID");
-                apiException = new ApiException(details, path);
-                return ResponseEntity
-                        .badRequest()
-                        .body(apiException);
+                throw new BadRequestException(USER_EXISTS.code, USER_EXISTS.getMessage());
             }
-            UserEntity userEntity = UserDTOToUserEntity.INSTANCE.userDTOToUserEntity(user);
+            UserEntity userEntity = UserRequestToUserEntity.INSTANCE.userRequestToUserEntity(user);
             userEntity.setStatus(1);
             userEntity.setRegistration_user(1);
             userEntity.setRegistration_date(LocalDateTime.now());
@@ -112,40 +104,27 @@ public class UserController implements IUserController {
                     .body(userEntityResult);
     }
 
-    @DeleteMapping("/id/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable  @Valid Long id) throws RestException{
         Optional<UserEntity> optionalUser =  service.findById(id);
         if(optionalUser.isPresent()){
             service.delete(id);
             return ResponseEntity.noContent().build();
         }else{
-            return ResponseEntity.notFound()
-                    .build();
+            throw new NotFoundException(USER_NOT_FOUND.code, USER_NOT_FOUND.getMessage());
         }
     }
 
-   @PutMapping("/id/{id}")
-   public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody UserDTO user, BindingResult result){
-       ApiException apiException = null;
-        if(result.hasErrors()){
-            return ErrorValidationHandler.validate(result);
-        }
+   @PutMapping("/{id}")
+   public ResponseEntity<?> update(@PathVariable  @Valid Long id, @RequestBody @Validated UserRequest user) throws RestException{
 
         Optional<UserEntity> optionalUser =  service.findById(id);
         if(optionalUser.isPresent()){
             UserEntity userEntity = optionalUser.get();
             if( user.getEmail().equalsIgnoreCase(userEntity.getEmail())
                 && !user.getEmail().isEmpty()){
-
-                List<String> details = new ArrayList();
-                details.add("There is already a user with that Email");
-                apiException = new ApiException(details, path);
-                return ResponseEntity
-                        .badRequest()
-                        .body(apiException);
-
+                throw new BadRequestException(USER_EXISTS.code, USER_EXISTS.getMessage());
             }
-
             userEntity.setId( id );
             userEntity.setIdentification( user.getIdentification() );
             userEntity.setName1( user.getName1() );
@@ -165,18 +144,17 @@ public class UserController implements IUserController {
             userEntity.setUpdate_date(LocalDateTime.now());
 
             UserEntity userEntityResult = service.save(userEntity);
-            User userResult = UserDetails(userEntityResult, path);
+            User userResult = UserDetails(userEntityResult);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(userResult);
         }else{
-            return ResponseEntity.notFound()
-                    .build();
+            throw new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage());
         }
     }
 
-    public User UserDetails(UserEntity userEntityResult, String path){
+    public User UserDetails(UserEntity userEntityResult){
 
         User userResult = UserEntityToUser.INSTANCE.userEntityToUser(userEntityResult);
 

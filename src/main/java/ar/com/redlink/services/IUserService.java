@@ -5,7 +5,7 @@ import ar.com.redlink.services.impl.entities.UserEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface IUserService extends ICRUD<UserEntity, Integer>{
+public interface IUserService extends ICRUD<UserEntity, Long>{
 
    Optional<UserEntity> findByIdentification(String identification);
     List<UserEntity> findByLastname(String lastname);

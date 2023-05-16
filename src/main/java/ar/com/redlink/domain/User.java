@@ -1,19 +1,14 @@
 package ar.com.redlink.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
+@Setter
 @ToString
-public class User {
+public class User extends BasicModel{
 
-    private Integer id;
     private UserTypeId typeId;
     private String identification;
     private String name1;

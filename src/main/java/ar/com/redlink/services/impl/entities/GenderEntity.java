@@ -1,17 +1,9 @@
 package ar.com.redlink.services.impl.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -23,12 +15,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Setter
 @Getter
+@ToString
 public class GenderEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GENDERS_SEQUENCE")
+    @SequenceGenerator(name="GENDERS_SEQUENCE", sequenceName ="GENDERS_SEQ",  allocationSize = 1, schema="BO_USERS")
     @Column(name = "ID")
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "The name of the identification type for user cannot be empty")
     @Column(name = "NAME", unique = true)
@@ -39,7 +33,7 @@ public class GenderEntity {
 
     @NotNull(message = "the status field cannot be null")
     @Column(name = "STATUS")
-    private String status;
+    private Integer status;
 
     @NotNull(message = "There was a problem with the registration date of the entity")
     @Column(name = "REGISTRATION_DATE")
