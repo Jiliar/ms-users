@@ -18,7 +18,9 @@ import ar.com.redlink.services.impl.entities.UserTypeIdEntity;
 import ar.com.redlink.utils.ErrorCodes;
 import com.github.damianwajser.exceptions.RestException;
 import com.github.damianwajser.exceptions.impl.badrequest.BadRequestException;
+import com.github.damianwajser.exceptions.impl.badrequest.ConflictException;
 import com.github.damianwajser.exceptions.impl.badrequest.NotFoundException;
+import com.github.damianwajser.exceptions.impl.servererror.InternalServerErrorException;
 import com.github.damianwajser.exceptions.model.ExceptionDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,17 +90,18 @@ public class UserController implements IUserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Validated UserRequest user) throws BadRequestException{
+    public ResponseEntity<?> create(@RequestBody @Validated UserRequest user) throws ConflictException, InternalServerErrorException {
 
             if (service.findByIdentification(user.getIdentification()).isPresent()) {
-                throw new BadRequestException(USER_EXISTS.code, USER_EXISTS.getMessage());
+                throw new ConflictException(USER_EXISTS.code, USER_EXISTS.getMessage());
             }
+
             UserEntity userEntity = UserRequestToUserEntity.INSTANCE.userRequestToUserEntity(user);
             userEntity.setStatus(1);
             userEntity.setRegistration_user(1);
             userEntity.setRegistration_date(LocalDateTime.now());
             UserEntity userEntityResult = service.save(userEntity);
-
+            log.info(this.getClass().getSimpleName()+".create() : "+userEntityResult.toString());
             return ResponseEntity
                     .ok()
                     .body(userEntityResult);

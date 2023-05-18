@@ -34,7 +34,7 @@ public class UserTypeIdEntity {
 
     @NotNull(message = "the status field cannot be null")
     @Column(name = "STATUS")
-    private String status;
+    private Integer status;
 
     @NotNull(message = "There was a problem with the registration date of the entity")
     @Column(name = "REGISTRATION_DATE")

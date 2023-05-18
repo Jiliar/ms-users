@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class User extends BasicModel{
+public class User {
 
     private UserTypeId typeId;
     private String identification;
